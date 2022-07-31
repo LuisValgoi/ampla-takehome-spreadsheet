@@ -1,0 +1,13 @@
+.nyc_output
+.next
+out
+dist
+public
+coverage
+config
+node_modules 
+build 
+*.html
+*.env
+.vscode
+*.env.*
