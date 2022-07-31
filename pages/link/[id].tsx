@@ -8,6 +8,6 @@ const SpreadsheetByLink: React.FC = () => {
   const { id } = router.query;
 
   return <Home linkId={id as string} />;
-}
+};
 
 export default SpreadsheetByLink;
