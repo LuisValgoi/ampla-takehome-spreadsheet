@@ -27,9 +27,9 @@ const Home: NextPage<IHome> = (props) => {
 
       <FloatingButtons linkId={linkId!} />
 
-      <article>
+      <main>
         <SpreadSheet linkId={linkId!} />
-      </article>
+      </main>
     </>
   );
 };
