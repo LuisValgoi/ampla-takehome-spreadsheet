@@ -11,12 +11,12 @@ export const FloatingButtons = styled.div`
 
 export const Button = styled.button`
   display: flex;
+  gap: 4px;
   justify-content: center;
   align-items: center;
-  height: 40px;
-  width: 40px;
+  padding: 12px;
   border: 2px solid black;
-  border-radius: 50%;
+  border-radius: 12px;
   background-color: black;
   color: white;
   transition: all 0.5s ease;
