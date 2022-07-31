@@ -4,12 +4,10 @@ import GlobalStyle from 'styles/Global';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <SpreadSheetProvider>
-      <>
-        <GlobalStyle />
-        <Component {...pageProps} />
-      </>
-    </SpreadSheetProvider>
+    <>
+      <GlobalStyle />
+      <Component {...pageProps} />
+    </>
   );
 }
 

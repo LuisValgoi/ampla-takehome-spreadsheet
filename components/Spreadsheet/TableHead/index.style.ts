@@ -8,10 +8,10 @@ export const TableHead = styled.thead`
 
 export const TableHeadRow = styled.tr``;
 
-export const TableHeadCell = styled.th<{ $highlighted?: boolean; $none?: boolean }>`
+export const TableHeadCell = styled.th<{ $none?: boolean }>`
   width: 100px;
   min-width: 100px;
   outline: 1px solid black;
   border: 0;
-  background-color: ${(props) => (props.$highlighted ? 'antiquewhite' : props.$none ? 'aliceblue' : 'unset')};
+  background-color: ${(props) => (props.$none ? 'aliceblue' : 'unset')};
 `;

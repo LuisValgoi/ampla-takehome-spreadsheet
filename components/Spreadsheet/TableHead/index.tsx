@@ -1,4 +1,3 @@
-import { useSpreadSheet } from 'contexts/SpreadSheetContext';
 import React, { useMemo } from 'react';
 import { v4 as uuid } from 'uuid';
 
@@ -9,7 +8,6 @@ interface TableHeadProps {
 }
 
 const TableHead: React.FC<TableHeadProps> = (props) => {
-  const { cellsFocused } = useSpreadSheet();
   const EMPTY = useMemo(() => '', []);
 
   return (
@@ -17,9 +15,7 @@ const TableHead: React.FC<TableHeadProps> = (props) => {
       <UI.TableHeadRow>
         <UI.TableHeadCell $none>{EMPTY}</UI.TableHeadCell>
         {props.letters.map((letter) => (
-          <UI.TableHeadCell key={uuid()} $highlighted={letter === cellsFocused.columnLetter}>
-            {letter}
-          </UI.TableHeadCell>
+          <UI.TableHeadCell key={uuid()}>{letter}</UI.TableHeadCell>
         ))}
       </UI.TableHeadRow>
     </UI.TableHead>

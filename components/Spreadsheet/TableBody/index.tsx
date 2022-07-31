@@ -1,7 +1,5 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { v4 as uuid } from 'uuid';
-
-import { useSpreadSheet } from 'contexts/SpreadSheetContext';
 
 import * as UI from './index.style';
 
@@ -11,46 +9,46 @@ interface TableBodyProps {
 }
 
 const TableBody: React.FC<TableBodyProps> = (props) => {
-  const inputRef = useRef() as React.MutableRefObject<HTMLInputElement>;
-  const { cellsFocused, setCellsFocused } = useSpreadSheet();
+  const renderTableBody = useMemo(
+    () => (
+      <UI.TableBody>
+        {props.cells.map((row, number) => (
+          <tr key={uuid()}>
+            <TableBodyFixedCell number={number} />
 
-  const handleOnFocusCell = useCallback(
-    (columnLetter?: string, rowNumber?: number) => {
-      setCellsFocused({ columnLetter, rowNumber });
-      setTimeout(() => inputRef?.current?.focus(), 100);
-    },
-    [setCellsFocused],
+            {row.map((value, letter) => (
+              <TableBodyCell key={uuid()} number={number} letters={props.letters} letterIdx={letter} />
+            ))}
+          </tr>
+        ))}
+      </UI.TableBody>
+    ),
+    [props.cells, props.letters],
   );
 
-  return (
-    <UI.TableBody>
-      {props.cells.map((row, number) => (
-        <tr key={uuid()}>
-          <UI.TableBodyFixedCell $highlighted={cellsFocused.rowNumber === number}>{number + 1}</UI.TableBodyFixedCell>
+  return renderTableBody;
+};
+export default TableBody;
 
-          {row.map((value, letter) => {
-            const hasBeenSelected =
-              cellsFocused.rowNumber === number && cellsFocused.columnLetter === props.letters[letter];
-            return (
-              <UI.TableBodyCell
-                key={uuid()}
-                onClick={() => handleOnFocusCell(props.letters[letter], number)}
-                $hasBeenSelected={hasBeenSelected}
-              >
-                {hasBeenSelected && (
-                  <input
-                    style={{ width: '95px', border: 0, height: '10px', fontSize: '10px', outline: 'unset' }}
-                    ref={inputRef}
-                    type="string"
-                  />
-                )}
-              </UI.TableBodyCell>
-            );
-          })}
-        </tr>
-      ))}
-    </UI.TableBody>
-  );
+const TableBodyFixedCell: React.FC<{ number: number }> = (props) => {
+  return <UI.TableBodyFixedCell>{props.number + 1}</UI.TableBodyFixedCell>;
 };
 
-export default TableBody;
+const TableBodyCell: React.FC<{ number: number; letters: string[]; letterIdx: number }> = (props) => {
+  const inputRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+
+  const handleFocus = useCallback((focusing: boolean) => {
+    setIsFocused(focusing);
+  }, []);
+
+  const renderTableBodyCell = useMemo(() => {
+    return (
+      <UI.TableBodyCell $isFocused={isFocused} onFocus={() => handleFocus(true)} onBlur={() => handleFocus(false)}>
+        <UI.TableBodyCellInput type="text" defaultValue={inputRef?.current?.value} ref={inputRef} />
+      </UI.TableBodyCell>
+    );
+  }, [handleFocus, isFocused]);
+
+  return renderTableBodyCell;
+};
