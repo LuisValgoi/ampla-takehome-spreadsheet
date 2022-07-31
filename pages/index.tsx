@@ -14,6 +14,7 @@ const Home: NextPage = () => {
       </Head>
 
       <FloatingButtons />
+
       <article>
         <SpreadSheet />
       </article>
