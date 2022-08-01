@@ -45,16 +45,17 @@ export const getData = (linkId: string) => {
   }
 };
 
-export const getReferenceCell = (value: string, source: ISpreadsheetData, circularRef: boolean): string => {
-  if (value?.startsWith('=') && circularRef) {
-    throw Error('Circular Ref');
+export const getReferenceCell = (value: string, humanIdx: string, source: ISpreadsheetData, circularRef: boolean): string => {
+  if (circularRef) {
+    return "Error Circular Ref";
   }
 
-  if (value?.startsWith('=') && !circularRef) {
+  if (value?.startsWith('=')) {
     const cellValueHumanIndex = value.slice(1, value.length).toUpperCase();
     const cellValue = source?.[cellValueHumanIndex]?.value;
+    const isCircularRef = humanIdx === cellValueHumanIndex;
 
-    return getReferenceCell(cellValue, source, cellValue === value);
+    return getReferenceCell(cellValue, humanIdx, source, isCircularRef);
   }
 
   return value;
