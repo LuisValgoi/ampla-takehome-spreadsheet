@@ -16,10 +16,21 @@ const TableBodyCell: React.FC<{
   const rowIndex = props.number;
   const cellIndex = props.letterIdx;
   const humanIndex = `${props.letters[cellIndex]}${rowIndex + 1}`;
-  const cellValue = props?.data?.[humanIndex];
+  const cellValueRaw = props?.data?.[humanIndex];
+
+  // memoized
+  const cellValueDisplay = useMemo(() => {
+    if (cellValueRaw?.startsWith('=')) {
+      const cellValueHumanIndex = cellValueRaw.slice(1, cellValueRaw.length).toUpperCase();
+      const cellValue = props?.data?.[cellValueHumanIndex];
+      return cellValue;
+    }
+
+    return cellValueRaw;
+  }, [cellValueRaw, props?.data]);
 
   // ref
-  const inputRef = useRef({ value: cellValue }) as React.MutableRefObject<HTMLInputElement>;
+  const cellRef = useRef({ value: cellValueDisplay }) as React.MutableRefObject<HTMLInputElement>;
 
   // state
   const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -39,8 +50,8 @@ const TableBodyCell: React.FC<{
       <UI.TableBodyCell $isFocused={isFocused} onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)}>
         <UI.TableBodyCellInput
           type="text"
-          ref={inputRef}
-          defaultValue={inputRef?.current?.value}
+          ref={cellRef}
+          defaultValue={cellRef?.current?.value}
           onKeyUp={(event) => handleKeyChange(event)}
         />
       </UI.TableBodyCell>
