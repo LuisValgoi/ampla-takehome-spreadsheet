@@ -1,19 +1,20 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 
-import { ISpreadsheetData } from 'components/Spreadsheet';
 import TableBodyCell from 'components/Spreadsheet/TableBodyCell';
 
 import * as UI from './index.style';
+import { getData } from 'utils/Spreadsheet';
+import { ISpreadsheetData } from '..';
 
 interface TableBodyProps {
   cells: string[][];
   letters: string[];
   linkId: string;
-  data: ISpreadsheetData | undefined;
 }
 
 const TableBody: React.FC<TableBodyProps> = (props) => {
+  // render
   const renderTableBody = useMemo(
     () => (
       <UI.TableBody>
@@ -27,14 +28,13 @@ const TableBody: React.FC<TableBodyProps> = (props) => {
                 letters={props.letters}
                 letterIdx={letter}
                 linkId={props.linkId}
-                data={props.data}
               />
             ))}
           </tr>
         ))}
       </UI.TableBody>
     ),
-    [props.cells, props.data, props.letters, props.linkId],
+    [props.cells, props.letters, props.linkId],
   );
 
   return renderTableBody;

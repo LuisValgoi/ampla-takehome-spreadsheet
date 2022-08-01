@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
 import { v4 as uuid } from 'uuid';
 
@@ -10,12 +10,7 @@ interface IHome {
 }
 
 const Home: NextPage<IHome> = (props) => {
-  const [linkId, setLinkId] = useState<string>();
-  const existingLinkId = props.linkId;
-
-  useEffect(() => {
-    setLinkId(existingLinkId ?? uuid());
-  }, [existingLinkId]);
+  const linkId = useMemo(() => props.linkId ?? uuid(), [props.linkId]);
 
   return (
     <>
@@ -25,10 +20,10 @@ const Home: NextPage<IHome> = (props) => {
         <link rel="icon" href="/favicon.png" />
       </Head>
 
-      <FloatingButtons linkId={linkId!} />
+      <FloatingButtons linkId={linkId} />
 
       <main>
-        <SpreadSheet linkId={linkId!} />
+        <SpreadSheet linkId={linkId} />
       </main>
     </>
   );

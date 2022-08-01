@@ -8,18 +8,25 @@ interface TableHeadProps {
 }
 
 const TableHead: React.FC<TableHeadProps> = (props) => {
+  // variables
   const EMPTY = useMemo(() => '', []);
+  const LETTERS = useMemo(() => props.letters, [props.letters]);
 
-  return (
-    <UI.TableHead>
-      <UI.TableHeadRow>
-        <UI.TableHeadCell $none>{EMPTY}</UI.TableHeadCell>
-        {props.letters.map((letter) => (
-          <UI.TableHeadCell key={uuid()}>{letter}</UI.TableHeadCell>
-        ))}
-      </UI.TableHeadRow>
-    </UI.TableHead>
-  );
+  // render
+  const renderTableHead = useMemo(() => {
+    return (
+      <UI.TableHead>
+        <UI.TableHeadRow>
+          <UI.TableHeadCell $none>{EMPTY}</UI.TableHeadCell>
+          {LETTERS.map((letter) => (
+            <UI.TableHeadCell key={uuid()}>{letter}</UI.TableHeadCell>
+          ))}
+        </UI.TableHeadRow>
+      </UI.TableHead>
+    )
+  }, [EMPTY, LETTERS])
+
+  return renderTableHead;
 };
 
-export default TableHead;
+export default React.memo(TableHead);

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
-import { getData, LETTERS } from 'utils/Spreadsheet';
+import { LETTERS } from 'utils/Spreadsheet';
 import { EMPTY_DATA } from 'utils/Spreadsheet';
 
 import TableBody from './TableBody';
@@ -12,6 +12,7 @@ export interface ISpreadsheetData {
   [key: string]: {
     display: string;
     value: string;
+    dep?: string;
   };
 }
 interface ISpreadsheet {
@@ -19,18 +20,20 @@ interface ISpreadsheet {
 }
 
 const SpreadSheet: React.FC<ISpreadsheet> = (props) => {
-  const [data, setData] = useState<ISpreadsheetData>();
+  // variables
+  const linkId = useMemo(() => props.linkId, [props.linkId]);
 
-  useEffect(() => {
-    setData(getData(props.linkId));
-  }, [props.linkId]);
+  // render
+  const renderTable = useMemo(() => {
+    return (
+      <UI.Table>
+        <TableHead letters={LETTERS} />
+        <TableBody cells={EMPTY_DATA} letters={LETTERS} linkId={linkId} />
+      </UI.Table>
+    )
+  }, [linkId])
 
-  return (
-    <UI.Table>
-      <TableHead letters={LETTERS} />
-      <TableBody cells={EMPTY_DATA} letters={LETTERS} linkId={props.linkId} data={data} />
-    </UI.Table>
-  );
+  return renderTable;
 };
 
-export default SpreadSheet;
+export default React.memo(SpreadSheet);

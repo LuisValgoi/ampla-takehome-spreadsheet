@@ -36,19 +36,19 @@ export const LETTERS = [
 export const EMPTY_DATA = new Array(100).fill(new Array(LETTERS.length).fill(''));
 
 export const getData = (linkId: string) => {
-  if (typeof window !== 'undefined') {
-    const existingDataRaw = localStorage?.getItem(linkId) as any as string;
-    const existingData = JSON.parse(existingDataRaw);
-    return existingData;
-  } else {
+  if (typeof window === 'undefined') {
     return {};
   }
+
+  const existingDataRaw = localStorage?.getItem(linkId) as any as string;
+  const existingData = JSON.parse(existingDataRaw);
+  return existingData as ISpreadsheetData;
 };
 
 export const getReferenceCell = (
-  value: string,
+  linkId: string,
+  value: string | undefined,
   humanIdx: string,
-  source: ISpreadsheetData,
   circularRef: boolean,
 ): string => {
   if (circularRef) {
@@ -56,25 +56,30 @@ export const getReferenceCell = (
   }
 
   if (value?.startsWith('=')) {
+    const source = getData(linkId) as ISpreadsheetData | undefined;
     const cellValueHumanIndex = value.slice(1, value.length).toUpperCase();
     const cellValue = source?.[cellValueHumanIndex]?.value;
     const isCircularRef = humanIdx === cellValueHumanIndex;
 
-    return getReferenceCell(cellValue, humanIdx, source, isCircularRef);
+    return getReferenceCell(linkId, cellValue, humanIdx, isCircularRef);
   }
 
-  return value;
+  return value ?? '';
 };
 
-export const persistValue = (source: any, linkId: string, typedValue: string, humanIndex: string) => {
+export const persistValue = (linkId: string, typedValue: string, humanIndex: string) => {
+  const PUB_ID = `storage-${humanIndex}`;
+  const source = getData(linkId) as ISpreadsheetData | undefined;
+
   if (typedValue === '') {
-    const modifiedData = { ...source };
+    const modifiedData: ISpreadsheetData = { ...source };
     delete modifiedData[humanIndex];
     localStorage.setItem(linkId, JSON.stringify(modifiedData));
+    window?.dispatchEvent?.(new CustomEvent(PUB_ID, { detail: modifiedData }));
   } else {
     const dep = typedValue.slice(1, typedValue.length).toUpperCase();
-    const cellValue = getReferenceCell(typedValue, humanIndex, source, false);
-    const modifiedData = {
+    const cellValue = getReferenceCell(linkId, typedValue, humanIndex, false);
+    const modifiedData: ISpreadsheetData = {
       ...source,
       [humanIndex]: {
         value: typedValue,
@@ -83,5 +88,6 @@ export const persistValue = (source: any, linkId: string, typedValue: string, hu
       },
     };
     localStorage.setItem(linkId, JSON.stringify(modifiedData));
+    window?.dispatchEvent?.(new CustomEvent(PUB_ID, { detail: modifiedData }));
   }
 };

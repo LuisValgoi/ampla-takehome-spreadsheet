@@ -32,4 +32,5 @@ export const TableBodyCellParagraph = styled.p`
   font-size: 10px;
   outline: unset;
   display: flex;
+  font-family: Arial, Helvetica, sans-serif;
 `;

@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
 
-import { ISpreadsheetData } from 'components/Spreadsheet';
 import { getData, getReferenceCell, persistValue } from 'utils/Spreadsheet';
 
 import * as UI from './index.style';
@@ -11,32 +10,46 @@ const TableBodyCell: React.FC<{
   letters: string[];
   letterIdx: number;
   linkId: string;
-  data: ISpreadsheetData | undefined;
 }> = (props) => {
   // variables
-  const linkId = props.linkId;
+  const linkId = useMemo(() => props.linkId, [props.linkId]);
+  const rowIndex = useMemo(() => props.number, [props.number]);
+  const cellIndex = useMemo(() => props.letterIdx, [props.letterIdx]);
+  const humanIndex = useMemo(() => `${props.letters[cellIndex]}${rowIndex + 1}`, [cellIndex, rowIndex, props.letters]);
   const data = getData(linkId);
-  const rowIndex = props.number;
-  const cellIndex = props.letterIdx;
-  const humanIndex = `${props.letters[cellIndex]}${rowIndex + 1}`;
+  const isSub = useMemo(() => !!data?.[humanIndex]?.dep, [data, humanIndex]);
+  const SUB_ID = useMemo(() => `storage-${data?.[humanIndex]?.dep}`, [data, humanIndex]);
 
   // state
   const [textValue, setTextValue] = useState<string>('');
-  const [inputValue, setInputValue] = useState<string>(data?.[humanIndex]?.value);
+  const [inputValue, setInputValue] = useState<string | undefined>(data?.[humanIndex]?.value);
   const [isFocused, setIsFocused] = useState<boolean>(false);
 
   // effect
   useEffect(() => {
-    setTextValue(getReferenceCell(inputValue, humanIndex, data, false));
-  }, [data, humanIndex, inputValue]);
+    setTextValue(getReferenceCell(linkId, inputValue, humanIndex, false));
+  }, [humanIndex, inputValue, linkId]);
+
+  // observable
+  useEffect(() => {
+    if (typeof window === 'undefined' && !isSub) {
+      return;
+    }
+
+    window.addEventListener(SUB_ID, () => {
+      const data = getData(props.linkId);
+      setInputValue(data?.[humanIndex]?.value);
+      setTextValue(getReferenceCell(linkId, data?.[humanIndex]?.value, humanIndex, false));
+    });
+  }, [data, humanIndex, isSub, linkId, props.linkId, SUB_ID]);
 
   // handlers
   const handleSaveValue = useCallback(
     (value: string) => {
       setInputValue(value);
-      persistValue(data, linkId, value, humanIndex);
+      persistValue(linkId, value, humanIndex);
     },
-    [data, humanIndex, linkId],
+    [humanIndex, linkId],
   );
 
   // render
@@ -44,7 +57,9 @@ const TableBodyCell: React.FC<{
     return (
       <UI.TableBodyCell $isFocused={isFocused} onClick={() => setIsFocused(true)}>
         <OutsideClickHandler display="inline-block" onOutsideClick={() => setIsFocused(false)}>
-          {isFocused ? (
+          {!isFocused ? (
+            <UI.TableBodyCellParagraph>{textValue}</UI.TableBodyCellParagraph>
+          ) : (
             <UI.TableBodyCellInput
               autoFocus
               type="text"
@@ -52,8 +67,6 @@ const TableBodyCell: React.FC<{
               onChange={(e) => handleSaveValue(e.target.value)}
               onKeyPress={(event) => (event.key === 'Enter' ? handleSaveValue(event.target.value) : undefined)}
             />
-          ) : (
-            <UI.TableBodyCellParagraph>{textValue}</UI.TableBodyCellParagraph>
           )}
         </OutsideClickHandler>
       </UI.TableBodyCell>
