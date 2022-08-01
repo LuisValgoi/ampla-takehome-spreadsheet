@@ -30,8 +30,8 @@ const SpreadSheet: React.FC<ISpreadsheet> = (props) => {
         <TableHead letters={LETTERS} />
         <TableBody cells={EMPTY_DATA} letters={LETTERS} linkId={linkId} />
       </UI.Table>
-    )
-  }, [linkId])
+    );
+  }, [linkId]);
 
   return renderTable;
 };

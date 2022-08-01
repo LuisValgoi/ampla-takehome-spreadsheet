@@ -23,8 +23,8 @@ const TableHead: React.FC<TableHeadProps> = (props) => {
           ))}
         </UI.TableHeadRow>
       </UI.TableHead>
-    )
-  }, [EMPTY, LETTERS])
+    );
+  }, [EMPTY, LETTERS]);
 
   return renderTableHead;
 };
