@@ -28,9 +28,13 @@ export const TableBodyCellParagraph = styled.p`
   margin: 0;
   border: 0;
   width: 96px;
+  max-width: 96px;
   height: 15px;
   font-size: 10px;
   outline: unset;
   display: flex;
   font-family: Arial, Helvetica, sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;

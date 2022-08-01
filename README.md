@@ -19,7 +19,7 @@ Please design and build a simple spreadsheet. The spreadsheet should have the fo
   - A1 references A2
   - A2 references A3
   - A3 references A1
-  The circular reference can be a chain of references of any length. Your spreadsheet should output some type of error to notify the user of the existence of the circular reference and allow the user to remedy the issue.
+    The circular reference can be a chain of references of any length. Your spreadsheet should output some type of error to notify the user of the existence of the circular reference and allow the user to remedy the issue.
 - Somewhere on the page, the user also needs to be able to generate a unique link back to the same spreadsheet. This link can be copied and pasted into a different browser window which will open the same spreadsheet. You do not need to worry about read/write permissions. Going to the root url will create a new spreadsheet.
 
 # 🖥️ Stack Requirements
