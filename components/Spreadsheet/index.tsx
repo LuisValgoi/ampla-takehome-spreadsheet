@@ -9,7 +9,10 @@ import TableHead from './TableHead';
 import * as UI from './index.style';
 
 export interface ISpreadsheetData {
-  [key: string]: string;
+  [key: string]: {
+    display: string;
+    value: string;
+  };
 }
 interface ISpreadsheet {
   linkId: string;

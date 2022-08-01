@@ -1,7 +1,8 @@
-import { KeyboardEvent, useCallback, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import OutsideClickHandler from 'react-outside-click-handler';
 
 import { ISpreadsheetData } from 'components/Spreadsheet';
-import { getData } from 'utils/Spreadsheet';
+import { getData, getReferenceCell } from 'utils/Spreadsheet';
 
 import * as UI from './index.style';
 
@@ -13,50 +14,58 @@ const TableBodyCell: React.FC<{
   data: ISpreadsheetData | undefined;
 }> = (props) => {
   // variables
+  const linkId = props.linkId;
+  const data = getData(linkId);
   const rowIndex = props.number;
   const cellIndex = props.letterIdx;
   const humanIndex = `${props.letters[cellIndex]}${rowIndex + 1}`;
-  const cellValueRaw = props?.data?.[humanIndex];
-
-  // memoized
-  const cellValueDisplay = useMemo(() => {
-    if (cellValueRaw?.startsWith('=')) {
-      const cellValueHumanIndex = cellValueRaw.slice(1, cellValueRaw.length).toUpperCase();
-      const cellValue = props?.data?.[cellValueHumanIndex];
-      return cellValue;
-    }
-
-    return cellValueRaw;
-  }, [cellValueRaw, props?.data]);
-
-  // ref
-  const cellRef = useRef({ value: cellValueDisplay }) as React.MutableRefObject<HTMLInputElement>;
 
   // state
+  const [inputValue, setInputValue] = useState<string>(data?.[humanIndex]?.value);
   const [isFocused, setIsFocused] = useState<boolean>(false);
+  const displayValue = useMemo(() => getReferenceCell(inputValue, data, false), [data, inputValue]);
 
   // handlers
-  const handleKeyChange = useCallback(
-    (event: KeyboardEvent<HTMLInputElement>) => {
-      const existingData = getData(props.linkId);
-      const modifiedData = { ...existingData, [humanIndex]: event.target.value };
-      localStorage.setItem(props.linkId, JSON.stringify(modifiedData));
+  const handleSaveValue = useCallback(
+    (typedValue: string) => {
+      try {
+        if (typedValue === '') {
+          const modifiedData = { ...data };
+          delete modifiedData[humanIndex];
+          localStorage.setItem(linkId, JSON.stringify(modifiedData));
+        } else {
+          const cellValue = getReferenceCell(typedValue, data, false);
+          const modifiedData = { ...data, [humanIndex]: { value: typedValue, display: cellValue ?? typedValue } };
+          localStorage.setItem(linkId, JSON.stringify(modifiedData));
+        }
+      } catch (error) {
+        alert(error);
+      } finally {
+        setInputValue(typedValue);
+      }
     },
-    [humanIndex, props.linkId],
+    [data, humanIndex, linkId],
   );
 
   const renderTableBodyCell = useMemo(() => {
     return (
-      <UI.TableBodyCell $isFocused={isFocused} onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)}>
-        <UI.TableBodyCellInput
-          type="text"
-          ref={cellRef}
-          defaultValue={cellRef?.current?.value}
-          onKeyUp={(event) => handleKeyChange(event)}
-        />
+      <UI.TableBodyCell $isFocused={isFocused} onClick={() => setIsFocused(true)}>
+        <OutsideClickHandler display="inline-block" onOutsideClick={() => setIsFocused(false)}>
+          {isFocused ? (
+            <UI.TableBodyCellInput
+              autoFocus
+              type="text"
+              value={inputValue}
+              onChange={(e) => handleSaveValue(e.target.value)}
+              onKeyPress={(event) => (event.key === 'Enter' ? handleSaveValue(event.target.value) : undefined)}
+            />
+          ) : (
+            <UI.TableBodyCellParagraph>{displayValue}</UI.TableBodyCellParagraph>
+          )}
+        </OutsideClickHandler>
       </UI.TableBodyCell>
     );
-  }, [handleKeyChange, isFocused]);
+  }, [displayValue, handleSaveValue, inputValue, isFocused]);
 
   return renderTableBodyCell;
 };
