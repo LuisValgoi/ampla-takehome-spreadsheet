@@ -15,6 +15,17 @@ export const TableBodyCell = styled.td<{ $isFocused?: boolean }>`
 `;
 
 export const TableBodyCellInput = styled.input`
+  margin: 0;
+  border: 0;
+  width: 96px;
+  height: 15px;
+  font-size: 10px;
+  outline: unset;
+  display: flex;
+`;
+
+export const TableBodyCellParagraph = styled.p`
+  margin: 0;
   border: 0;
   width: 96px;
   height: 15px;
