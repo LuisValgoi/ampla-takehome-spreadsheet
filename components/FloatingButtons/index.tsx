@@ -17,7 +17,7 @@ const FloatingButtons: React.FC<IFloatingButtonsProps> = (props) => {
     <UI.FloatingButtons>
       <UI.Button onClick={handleLinkClick}>
         <Image src="/link.svg" alt="Link" height={15} width={15} />
-        GENERATE LINK
+        LINK
       </UI.Button>
     </UI.FloatingButtons>
   );

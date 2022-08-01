@@ -1,4 +1,4 @@
-import { ISpreadsheetData } from 'components/Spreadsheet';
+import { ISpreadsheetData } from 'interfaces/Spreadsheet';
 
 export const LETTERS = [
   'A',

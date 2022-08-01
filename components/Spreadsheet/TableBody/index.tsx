@@ -2,10 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 
 import TableBodyCell from 'components/Spreadsheet/TableBodyCell';
+import { ISpreadsheetData } from 'interfaces/Spreadsheet';
 
 import * as UI from './index.style';
-import { getData } from 'utils/Spreadsheet';
-import { ISpreadsheetData } from '..';
 
 interface TableBodyProps {
   cells: string[][];
