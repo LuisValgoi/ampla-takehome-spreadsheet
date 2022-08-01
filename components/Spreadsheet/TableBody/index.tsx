@@ -40,4 +40,4 @@ const TableBody: React.FC<TableBodyProps> = (props) => {
   return renderTableBody;
 };
 
-export default TableBody;
+export default React.memo(TableBody);

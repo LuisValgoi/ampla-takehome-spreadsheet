@@ -65,3 +65,23 @@ export const getReferenceCell = (
 
   return value;
 };
+
+export const persistValue = (source: any, linkId: string, typedValue: string, humanIndex: string) => {
+  if (typedValue === '') {
+    const modifiedData = { ...source };
+    delete modifiedData[humanIndex];
+    localStorage.setItem(linkId, JSON.stringify(modifiedData));
+  } else {
+    const dep = typedValue.slice(1, typedValue.length).toUpperCase();
+    const cellValue = getReferenceCell(typedValue, humanIndex, source, false);
+    const modifiedData = {
+      ...source,
+      [humanIndex]: {
+        value: typedValue,
+        display: cellValue ?? typedValue,
+        ...(typedValue?.startsWith('=') ? { dep } : {}),
+      },
+    };
+    localStorage.setItem(linkId, JSON.stringify(modifiedData));
+  }
+};

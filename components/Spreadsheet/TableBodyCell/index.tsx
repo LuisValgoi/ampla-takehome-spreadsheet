@@ -1,8 +1,8 @@
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
 
 import { ISpreadsheetData } from 'components/Spreadsheet';
-import { getData, getReferenceCell } from 'utils/Spreadsheet';
+import { getData, getReferenceCell, persistValue } from 'utils/Spreadsheet';
 
 import * as UI from './index.style';
 
@@ -21,32 +21,25 @@ const TableBodyCell: React.FC<{
   const humanIndex = `${props.letters[cellIndex]}${rowIndex + 1}`;
 
   // state
+  const [textValue, setTextValue] = useState<string>('');
   const [inputValue, setInputValue] = useState<string>(data?.[humanIndex]?.value);
   const [isFocused, setIsFocused] = useState<boolean>(false);
-  const [displayValue, setDisplayValue] = useState<string>('');
 
   // effect
   useEffect(() => {
-    setDisplayValue(getReferenceCell(inputValue, humanIndex, data, false));
+    setTextValue(getReferenceCell(inputValue, humanIndex, data, false));
   }, [data, humanIndex, inputValue]);
 
   // handlers
   const handleSaveValue = useCallback(
-    (typedValue: string) => {
-      setInputValue(typedValue);
-      if (typedValue === '') {
-        const modifiedData = { ...data };
-        delete modifiedData[humanIndex];
-        localStorage.setItem(linkId, JSON.stringify(modifiedData));
-      } else {
-        const cellValue = getReferenceCell(typedValue, humanIndex, data, false);
-        const modifiedData = { ...data, [humanIndex]: { value: typedValue, display: cellValue ?? typedValue } };
-        localStorage.setItem(linkId, JSON.stringify(modifiedData));
-      }
+    (value: string) => {
+      setInputValue(value);
+      persistValue(data, linkId, value, humanIndex);
     },
     [data, humanIndex, linkId],
   );
 
+  // render
   const renderTableBodyCell = useMemo(() => {
     return (
       <UI.TableBodyCell $isFocused={isFocused} onClick={() => setIsFocused(true)}>
@@ -60,14 +53,14 @@ const TableBodyCell: React.FC<{
               onKeyPress={(event) => (event.key === 'Enter' ? handleSaveValue(event.target.value) : undefined)}
             />
           ) : (
-            <UI.TableBodyCellParagraph>{displayValue}</UI.TableBodyCellParagraph>
+            <UI.TableBodyCellParagraph>{textValue}</UI.TableBodyCellParagraph>
           )}
         </OutsideClickHandler>
       </UI.TableBodyCell>
     );
-  }, [handleSaveValue, displayValue, inputValue, isFocused]);
+  }, [handleSaveValue, textValue, inputValue, isFocused]);
 
   return renderTableBodyCell;
 };
 
-export default TableBodyCell;
+export default React.memo(TableBodyCell);
