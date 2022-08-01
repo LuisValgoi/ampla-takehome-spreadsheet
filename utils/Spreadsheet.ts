@@ -45,9 +45,14 @@ export const getData = (linkId: string) => {
   }
 };
 
-export const getReferenceCell = (value: string, humanIdx: string, source: ISpreadsheetData, circularRef: boolean): string => {
+export const getReferenceCell = (
+  value: string,
+  humanIdx: string,
+  source: ISpreadsheetData,
+  circularRef: boolean,
+): string => {
   if (circularRef) {
-    return "Error Circular Ref";
+    return 'Error Circular Ref';
   }
 
   if (value?.startsWith('=')) {

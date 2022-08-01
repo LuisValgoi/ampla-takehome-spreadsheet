@@ -55,7 +55,7 @@ const TableBodyCell: React.FC<{
             <UI.TableBodyCellInput
               autoFocus
               type="text"
-              value={inputValue || ""}
+              value={inputValue || ''}
               onChange={(e) => handleSaveValue(e.target.value)}
               onKeyPress={(event) => (event.key === 'Enter' ? handleSaveValue(event.target.value) : undefined)}
             />
