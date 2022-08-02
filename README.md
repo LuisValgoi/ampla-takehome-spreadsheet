@@ -37,7 +37,3 @@ Your work will be judged on:
 - The ability for your code to achieve the functionality described above
 
 To be respectful of your time, you will not receive additional credit for implementing additional functionality not provided in the design requirements above.
-
-# ✉️ Submission
-
-You can provide your codebase in the form a github or gitlab repo and email the link to [john.zeller@getampla.com](mailto:john.zeller@getampla.com) and [jie.zhou@getampla.com](mailto:jie.zhou@getampla.com)
