@@ -51,15 +51,17 @@ export const getReferenceCell = (
   humanIdx: string,
   circularRef: boolean,
 ): string => {
+  const CIRCULAR_REF_MESSAGE = 'Error Circular Ref';
   if (circularRef) {
-    return 'Error Circular Ref';
+    return CIRCULAR_REF_MESSAGE;
   }
 
   if (value?.startsWith('=')) {
     const source = getData(linkId) as ISpreadsheetData | undefined;
     const cellValueHumanIndex = value.slice(1, value.length).toUpperCase();
     const cellValue = source?.[cellValueHumanIndex]?.value;
-    const isCircularRef = humanIdx === cellValueHumanIndex;
+    const cellDisplay = source?.[cellValueHumanIndex]?.display;
+    const isCircularRef = humanIdx === cellValueHumanIndex || cellDisplay === CIRCULAR_REF_MESSAGE;
 
     return getReferenceCell(linkId, cellValue, humanIdx, isCircularRef);
   }
