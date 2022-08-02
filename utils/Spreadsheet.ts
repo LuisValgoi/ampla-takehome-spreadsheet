@@ -68,14 +68,12 @@ export const getReferenceCell = (
 };
 
 export const persistValue = (linkId: string, typedValue: string, humanIndex: string) => {
-  const PUB_ID = `storage-${humanIndex}`;
   const source = getData(linkId) as ISpreadsheetData | undefined;
 
   if (typedValue === '') {
     const modifiedData: ISpreadsheetData = { ...source };
     delete modifiedData[humanIndex];
     localStorage.setItem(linkId, JSON.stringify(modifiedData));
-    window?.dispatchEvent?.(new CustomEvent(PUB_ID, { detail: modifiedData }));
   } else {
     const dep = typedValue.slice(1, typedValue.length).toUpperCase();
     const cellValue = getReferenceCell(linkId, typedValue, humanIndex, false);
@@ -88,6 +86,6 @@ export const persistValue = (linkId: string, typedValue: string, humanIndex: str
       },
     };
     localStorage.setItem(linkId, JSON.stringify(modifiedData));
-    window?.dispatchEvent?.(new CustomEvent(PUB_ID, { detail: modifiedData }));
   }
+  window?.dispatchEvent?.(new Event('DEP'));
 };

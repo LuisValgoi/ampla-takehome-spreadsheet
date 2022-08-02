@@ -17,8 +17,8 @@ const TableBodyCell: React.FC<{
   const cellIndex = useMemo(() => props.letterIdx, [props.letterIdx]);
   const humanIndex = useMemo(() => `${props.letters[cellIndex]}${rowIndex + 1}`, [cellIndex, rowIndex, props.letters]);
   const data = getData(linkId);
-  const isSub = useMemo(() => !!data?.[humanIndex]?.dep, [data, humanIndex]);
-  const SUB_ID = useMemo(() => `storage-${data?.[humanIndex]?.dep}`, [data, humanIndex]);
+  const cellDep = useMemo(() => data?.[humanIndex]?.dep, [data, humanIndex]);
+  const isSub = useMemo(() => !!cellDep, [cellDep]);
 
   // state
   const [textValue, setTextValue] = useState<string>('');
@@ -36,12 +36,14 @@ const TableBodyCell: React.FC<{
       return;
     }
 
-    window.addEventListener(SUB_ID, () => {
-      const data = getData(props.linkId);
-      setInputValue(data?.[humanIndex]?.value);
-      setTextValue(getReferenceCell(linkId, data?.[humanIndex]?.value, humanIndex, false));
-    });
-  }, [data, humanIndex, isSub, linkId, props.linkId, SUB_ID]);
+    if (!!cellDep) {
+      window.addEventListener('DEP', () => {
+        const data = getData(linkId);
+        setInputValue(data?.[humanIndex]?.value);
+        setTextValue(getReferenceCell(linkId, data?.[humanIndex]?.value, humanIndex, false));
+      });
+    }
+  }, [cellDep, data, humanIndex, isSub, linkId]);
 
   // handlers
   const handleSaveValue = useCallback(
